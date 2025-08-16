@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+  <title>Furniture WebAR</title>
+    <meta name="description" content="&lt;model-viewer&gt; template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" href="./styles.css" rel="stylesheet"/>
+  </head>
+
+<body>
+
+<model-viewer id="desk"  ar ar-modes="webxr"  ar-placement="floor" ar-scale="fixed" reveal="auto" camera-orbit="-30deg auto auto" max-camera-orbit="auto 100deg auto" shadow-intensity="1" camera-controls touch-action="pan-y" src="assets/models/Desk01.glb" alt="A 3D model of an armchair.">
+                 <div class="progress-bar hide" slot="progress-bar">
+          <div class="update-bar"></div>
+      </div>
+       </button><button class="hotspot-icon" id="toggleVariantBtn" slot="hotspot-3" data-position="0.16m 1.25m 0.96m" data-normal="0m 1m 2.220446049250313e-16m" data-visibility-attribute="visible">
+        <img src="assets/icons/palette.png" alt="Choose Material" />
+      </button>
+  <button class="hotspot-icon" slot="hotspot-scale" id="scaleDeskTopBtn" data-position="0.2 0.3 0.4" data-visibility-attribute="visible">
+    <img src="assets/icons/scale.svg" alt="Scale Top" />
+  </button>
+  <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="1 -1 1" data-normal="1 0 0"></button>
+                  <button slot="hotspot-dim+X-Y" class="dim" data-position="1 -1 0" data-normal="1 0 0"></button>
+                  <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="1 -1 -1" data-normal="1 0 0"></button>
+                  <button slot="hotspot-dim+X-Z" class="dim" data-position="1 0 -1" data-normal="1 0 0"></button>
+                  <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="1 1 -1" data-normal="0 1 0"></button>
+                  <button slot="hotspot-dim+Y-Z" class="dim" data-position="0 -1 -1" data-normal="0 1 0"></button>
+                  <button slot="hotspot-dot-X+Y-Z" class="dot" data-position="-1 1 -1" data-normal="0 1 0"></button>
+                  <button slot="hotspot-dim-X-Z" class="dim" data-position="-1 0 -1" data-normal="-1 0 0"></button>
+                  <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="-1 -1 -1" data-normal="-1 0 0"></button>
+                  <button slot="hotspot-dim-X-Y" class="dim" data-position="-1 -1 0" data-normal="-1 0 0"></button>
+                  <button slot="hotspot-dot-X-Y+Z" class="dot" data-position="-1 -1 1" data-normal="-1 0 0"></button>
+                  
+                
+
+                  <svg id="dimLines" width="100%" height="100dvh" xmlns="http://www.w3.org/2000/svg" class="dimensionLineContainer">
+                    <line class="dimensionLine"></line>
+                    <line class="dimensionLine"></line>
+                    <line class="dimensionLine"></line>
+                    <line class="dimensionLine"></line>
+                    <line class="dimensionLine"></line>
+                  </svg>
+
+               
+                <div id="material-info"></div>
+                  <div id="controls" class="dim glass">
+                    <label for="src">Product:</label>
+                    <select id="src">
+                      <option value="assets/models/Desk01.glb">Desk</option>
+                      <option value="assets/models/eames_chair.glb">Chair</option>
+                      <option value="assets/models/pwood_basic_veneer.glb">Cactus</option>
+                    </select><br>
+
+                    <label for="show-dimensions">Show Dimensions:</label>
+                    <input id="show-dimensions" type="checkbox" >
+                  </div>
+
+  <div id="variant-swatches" class="variant-panel">
+  
+    
+</div>
+                </model-viewer>
+
+             
+   
+              <script src="script.js"></script>
+          <script type="module">
+  const modelViewer = document.querySelector("model-viewer#desk");
+const swatchContainer = document.getElementById("variant-swatches");
+  const checkbox = modelViewer.querySelector('#show-dimensions');
+const dimElements = [
+  ...modelViewer.querySelectorAll('button.dim'),
+  modelViewer.querySelector('#dimLines')
+];
+const arButton = document.getElementById("ar-button");
+ let isDeskTopScaled = false; 
+ modelViewer.querySelector('#src').addEventListener('input', (event) => {
+                    modelViewer.src = event.target.value;
+                   isDeskTopScaled = false;
+                  });
+
+                 
+
+modelViewer.addEventListener('camera-change', () => {
+  const hotspot = modelViewer.queryHotspot('hotspot-3');
+  if (hotspot && hotspot.canvasPosition) {
+    swatchContainer.style.left = `${hotspot.canvasPosition.x+120}px`;
+    swatchContainer.style.top = `${hotspot.canvasPosition.y + 40}px`; // Slight offset
+    swatchContainer.style.transform = `translate(-50%, 0)`;
+  }
+});
+
+  async function fetchModelConfig(src) {
+         const jsonPath = `assets/configs/${src.split('/').pop().replace('.glb', '')}.json`;
+  try {
+    const response = await fetch(jsonPath);
+    if (!response.ok) {
+      console.info(`ℹ️ No config found for: ${jsonPath}`);
+      return null;
+    }
+    return await response.json();
+  } catch (err) {
+    console.warn(`⚠️ Failed to load config for ${src}:`, err.message);
+    return null;
+  }
+}
+
+      document.querySelector('#src').addEventListener('input', async (event) => {
+        const src = event.target.value;
+        modelViewer.src = src;
+        const config = await fetchModelConfig(src);
+        updateVariantsAndHotspot(config);
+      });
+
+      function updateVariantsAndHotspot(config) {
+        swatchContainer.innerHTML = "";
+        const oldHotspot = modelViewer.querySelector("#toggleVariantBtn");
+        if (oldHotspot) oldHotspot.remove();
+
+        if (config && config.hotspot) {
+          const btn = document.createElement("button");
+          btn.className = "hotspot-icon";
+          btn.id = "toggleVariantBtn";
+          btn.setAttribute("slot", config.hotspot.name);
+          btn.setAttribute("data-position", config.hotspot.position);
+          btn.setAttribute("data-normal", config.hotspot.normal);
+          btn.setAttribute("data-visibility-attribute", "visible");
+          btn.innerHTML = `<img src="${config.hotspot.icon}" alt="Choose Material" />`;
+          modelViewer.appendChild(btn);
+
+          btn.addEventListener("click", () => {
+            swatchContainer.classList.toggle("show");
+          });
+        }
+
+        if (config && config.variants) {
+          for (const key in config.variants) {
+            const { label, sub, img } = config.variants[key];
+            const option = document.createElement("div");
+            option.className = "variant-option";
+            option.dataset.variant = key;
+            option.innerHTML = `
+              <div class="label">
+                <strong>${label}</strong>
+                <span class="sub">${sub}</span>
+              </div>
+              <div class="swatch" style="background-image: url('${img}')"></div>
+            `;
+            option.addEventListener("click", () => {
+              modelViewer.variantName = key === "default" ? null : key;
+            });
+            swatchContainer.appendChild(option);
+          }
+        }
+     
+}
+
+
+    function setupDeskTopScaling() {
+    console.log("Setting up desktop scaling...");
+    
+    // Direct event listener without any complex setup
+    document.addEventListener("click", (event) => {
+      if (event.target.closest("#scaleDeskTopBtn")) {
+        console.log("SCALE BUTTON CLICKED!");
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Immediate response - no timeout
+        console.log("Attempting to scale desktop...");
+        
+        if (modelViewer.model) {
+            console.log("Model is available, accessing hierarchy...");
+            
+            // Access the model's hierarchy directly
+            const hierarchySymbol = Object.getOwnPropertySymbols(modelViewer.model).find(s => s.toString().includes('hierarchy'));
+            const primitivesSymbol = Object.getOwnPropertySymbols(modelViewer.model).find(s => s.toString().includes('primitives'));
+            
+            if (hierarchySymbol) {
+              const hierarchy = modelViewer.model[hierarchySymbol];
+              console.log("Hierarchy:", hierarchy);
+              
+              // Look for deskTopp in the hierarchy
+              let deskTop = null;
+              
+              // Check each item in hierarchy - specifically look for deskTopp first
+              for (const item of hierarchy) {
+                console.log(`Checking hierarchy item: "${item.name}"`);
+                if (item.name === 'deskTopp') {
+                  deskTop = item;
+                  console.log(`Found deskTopp: ${item.name}`);
+                  break;
+                }
+              }
+              
+              // If we didn't find deskTopp, log all available names
+              if (!deskTop) {
+                console.log("deskTopp not found, available items:");
+                hierarchy.forEach(item => console.log(`- ${item.name}`));
+              }
+              
+              // Also check primitives for deskTopp specifically
+              if (!deskTop && primitivesSymbol) {
+                const primitives = modelViewer.model[primitivesSymbol];
+                console.log("Checking primitives for deskTopp:", primitives);
+                
+                for (const primitive of primitives) {
+                  console.log(`Checking primitive: "${primitive.name}"`);
+                  if (primitive.name === 'deskTopp') {
+                    deskTop = primitive;
+                    console.log(`Found deskTopp in primitives: ${primitive.name}`);
+                    break;
+                  }
+                }
+                
+                // If still not found, list all primitive names
+                if (!deskTop) {
+                  console.log("deskTopp not found in primitives, available primitives:");
+                  primitives.forEach(primitive => console.log(`- ${primitive.name}`));
+                }
+              }
+              
+              if (deskTop) {
+                console.log("SUCCESS: Found deskTop object!", deskTop);
+                
+                // Try to access the Three.js object for scaling
+                // Look for Three.js mesh in the object
+                let threeMesh = null;
+                
+                // Method 1: Check if it has a direct threejs object
+                if (deskTop.mesh) {
+                  threeMesh = deskTop.mesh;
+                  console.log("Found Three.js mesh via .mesh property");
+                } else if (deskTop.object3D) {
+                  threeMesh = deskTop.object3D;
+                  console.log("Found Three.js mesh via .object3D property");
+                } else {
+                  // Method 2: Check symbols for Three.js object
+                  const symbols = Object.getOwnPropertySymbols(deskTop);
+                  for (const symbol of symbols) {
+                    const value = deskTop[symbol];
+                    if (value && value.scale && typeof value.scale.set === 'function') {
+                      threeMesh = value;
+                      console.log(`Found Three.js mesh via symbol: ${symbol.toString()}`);
+                      break;
+                    }
+                  }
+                }
+                
+                if (threeMesh && threeMesh.scale) {
+                  console.log("SUCCESS: Found scalable mesh!", threeMesh);
+                  console.log("Current scale:", threeMesh.scale);
+                  
+                  if (!isDeskTopScaled) {
+                    threeMesh.scale.set(1.5, 1.5, 1);
+                    isDeskTopScaled = true;
+                    console.log("✅ Scaled deskTop UP to 1.5x");
+                  } else {
+                    threeMesh.scale.set(1, 1, 1);
+                    isDeskTopScaled = false;
+                    console.log("✅ Reset deskTop scale to 1x");
+                  }
+                  
+                  // Force immediate updates - more aggressive approach
+                  threeMesh.updateMatrix();
+                  threeMesh.updateMatrixWorld(true);
+                  
+                  // Trigger camera change to force re-render
+                  const currentOrbit = modelViewer.getCameraOrbit();
+                  modelViewer.cameraOrbit = `${currentOrbit.theta}rad ${currentOrbit.phi}rad ${currentOrbit.radius}m`;
+                  
+                  // Multiple update strategies
+                  modelViewer.requestUpdate();
+                  
+                  // Force render using internal renderer if possible
+                  setTimeout(() => {
+                    try {
+                      // Try to access internal renderer and force render
+                      const rendererSymbols = Object.getOwnPropertySymbols(modelViewer);
+                      const rendererSymbol = rendererSymbols.find(s => s.toString().includes('renderer') || s.toString().includes('scene'));
+                      if (rendererSymbol) {
+                        const renderer = modelViewer[rendererSymbol];
+                        if (renderer && renderer.render) {
+                          renderer.render();
+                        }
+                      }
+                    } catch (e) {
+                      console.log("Could not force internal render");
+                    }
+                    
+                    modelViewer.requestUpdate();
+                  }, 10);
+                  
+                  // Simulate a tiny camera movement to trigger update
+                  setTimeout(() => {
+                    const orbit = modelViewer.getCameraOrbit();
+                    modelViewer.cameraOrbit = `${orbit.theta + 0.001}rad ${orbit.phi}rad ${orbit.radius}m`;
+                    setTimeout(() => {
+                      modelViewer.cameraOrbit = `${orbit.theta}rad ${orbit.phi}rad ${orbit.radius}m`;
+                    }, 10);
+                  }, 20);
+                } else {
+                  console.error("❌ Could not find scalable Three.js mesh in object");
+                  console.log("Desktop object properties:", Object.keys(deskTop));
+                  console.log("Desktop object symbols:", Object.getOwnPropertySymbols(deskTop).map(s => s.toString()));
+                }
+              } else {
+                console.error("❌ deskTopp mesh NOT FOUND in hierarchy or primitives");
+              }
+            } else {
+              console.error("❌ Could not access model hierarchy");
+            }
+          } else {
+            console.error("❌ Model not available");
+          }
+      }
+    });
+  }
+
+  // Set up scaling immediately
+  setupDeskTopScaling(); 
+
+      document.addEventListener("click", (e) => {
+        const toggleBtn = document.getElementById("toggleVariantBtn");
+        if (!swatchContainer.contains(e.target) && e.target !== toggleBtn) {
+          swatchContainer.classList.remove("show");
+        }
+      });
+
+   
+      modelViewer.addEventListener("load", async () => {
+        const config = await fetchModelConfig(modelViewer.src);
+        updateVariantsAndHotspot(config);
+
+
+      });
+
+   
+  const svg = modelViewer.querySelector('#dimLines');
+
+function resizeAndPositionSVG() {
+  const rect = modelViewer.getBoundingClientRect();
+  svg.setAttribute("width", rect.width);
+  svg.setAttribute("height", rect.height);
+  svg.style.position = "absolute";
+  svg.style.top = `${rect.top}px`;
+  svg.style.left = `${rect.left}px`;
+  svg.style.pointerEvents = "none";
+}
+
+window.addEventListener("resize", resizeAndPositionSVG);
+window.addEventListener("scroll", resizeAndPositionSVG);
+window.addEventListener("orientationchange", resizeAndPositionSVG);
+modelViewer.addEventListener("load", resizeAndPositionSVG);
+resizeAndPositionSVG();
+
+
+
+                  function setVisibility(visible) {
+                    dimElements.forEach((element) => {
+                      if (visible) {
+                        element.classList.remove('hide');
+                      } else {
+                        element.classList.add('hide');
+                      }
+                    });
+                  }
+
+                  checkbox.addEventListener('change', () => {
+  setVisibility(checkbox.checked);
+});
+
+// Ensure dimensions are hidden when entering AR
+modelViewer.addEventListener('ar-status', (event) => {
+  setVisibility(checkbox.checked && event.detail.status !== 'session-started');
+});
+
+// ✅ Set initial visibility on page load
+setVisibility(checkbox.checked);
+
+                  // update svg
+                  function drawLine(svgLine, dotHotspot1, dotHotspot2, dimensionHotspot) {
+                    if (dotHotspot1 && dotHotspot2) {
+                      svgLine.setAttribute('x1', dotHotspot1.canvasPosition.x);
+                      svgLine.setAttribute('y1', dotHotspot1.canvasPosition.y);
+                      svgLine.setAttribute('x2', dotHotspot2.canvasPosition.x);
+                      svgLine.setAttribute('y2', dotHotspot2.canvasPosition.y);
+
+                      // use provided optional hotspot to tie visibility of this svg line to
+                      if (dimensionHotspot && !dimensionHotspot.facingCamera) {
+                        svgLine.classList.add('hide');
+                      }
+                      else {
+                        svgLine.classList.remove('hide');
+                      }
+                    }
+                  }
+
+                  const dimLines = modelViewer.querySelectorAll('line');
+
+                  const renderSVG = () => {
+                    drawLine(dimLines[0], modelViewer.queryHotspot('hotspot-dot+X-Y+Z'), modelViewer.queryHotspot('hotspot-dot+X-Y-Z'), modelViewer.queryHotspot('hotspot-dim+X-Y'));
+                    drawLine(dimLines[1], modelViewer.queryHotspot('hotspot-dot+X-Y-Z'), modelViewer.queryHotspot('hotspot-dot+X+Y-Z'), modelViewer.queryHotspot('hotspot-dim+X-Z'));
+                    drawLine(dimLines[2], modelViewer.queryHotspot('hotspot-dot+X+Y-Z'), modelViewer.queryHotspot('hotspot-dot-X+Y-Z')); // always visible
+                    drawLine(dimLines[3], modelViewer.queryHotspot('hotspot-dot-X+Y-Z'), modelViewer.queryHotspot('hotspot-dot-X-Y-Z'), modelViewer.queryHotspot('hotspot-dim-X-Z'));
+                    drawLine(dimLines[4], modelViewer.queryHotspot('hotspot-dot-X-Y-Z'), modelViewer.queryHotspot('hotspot-dot-X-Y+Z'), modelViewer.queryHotspot('hotspot-dim-X-Y'));
+                  };
+
+      
+   
+                  modelViewer.addEventListener('load', () => {
+                    const center = modelViewer.getBoundingBoxCenter();
+                    const size = modelViewer.getDimensions();
+                    const x2 = size.x / 2;
+                    const y2 = size.y / 2;
+                    const z2 = size.z / 2;
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dot+X-Y+Z',
+                      position: `${center.x + x2} ${center.y - y2} ${center.z + z2}`
+                    });
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dim+X-Y',
+                      position: `${center.x + x2 * 1.2} ${center.y - y2 * 1.1} ${center.z}`
+                    });
+                    modelViewer.querySelector('button[slot="hotspot-dim+X-Y"]').textContent =
+                      `${(size.z * 100).toFixed(0)} cm`;
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dot+X-Y-Z',
+                      position: `${center.x + x2} ${center.y - y2} ${center.z - z2}`
+                    });
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dim+X-Z',
+                      position: `${center.x + x2 * 1.2} ${center.y} ${center.z - z2 * 1.2}`
+                    });
+                    modelViewer.querySelector('button[slot="hotspot-dim+X-Z"]').textContent =
+                      `${(size.y * 100).toFixed(0)} cm`;
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dot+X+Y-Z',
+                      position: `${center.x + x2} ${center.y + y2} ${center.z - z2}`
+                    });
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dim+Y-Z',
+                      position: `${center.x} ${center.y + y2 * 1.1} ${center.z - z2 * 1.1}`
+                    });
+                    modelViewer.querySelector('button[slot="hotspot-dim+Y-Z"]').textContent =
+                      `${(size.x * 100).toFixed(0)} cm`;
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dot-X+Y-Z',
+                      position: `${center.x - x2} ${center.y + y2} ${center.z - z2}`
+                    });
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dim-X-Z',
+                      position: `${center.x - x2 * 1.2} ${center.y} ${center.z - z2 * 1.2}`
+                    });
+                    modelViewer.querySelector('button[slot="hotspot-dim-X-Z"]').textContent =
+                      `${(size.y * 100).toFixed(0)} cm`;
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dot-X-Y-Z',
+                      position: `${center.x - x2} ${center.y - y2} ${center.z - z2}`
+                    });
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dim-X-Y',
+                      position: `${center.x - x2 * 1.2} ${center.y - y2 * 1.1} ${center.z}`
+                    });
+                    modelViewer.querySelector('button[slot="hotspot-dim-X-Y"]').textContent =
+                      `${(size.z * 100).toFixed(0)} cm`;
+
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-dot-X-Y+Z',
+                      position: `${center.x - x2} ${center.y - y2} ${center.z + z2}`
+                    });
+
+                    // Update material hotspot positions
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-material-top',
+                      position: `${center.x} ${center.y + y2 + 0.2} ${center.z}`
+                    });
+                    
+                    modelViewer.updateHotspot({
+                      name: 'hotspot-material-legs',
+                      position: `${center.x} ${center.y - y2 - 0.2} ${center.z}`
+                    });
+
+                    renderSVG();
+                    modelViewer.addEventListener('camera-change', renderSVG);
+                  });
+
+</script>
+
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script> 
+</body>
+</html>

@@ -1,0 +1,81 @@
+{
+  "hotspot": {
+    "name": "hotspot-3",
+    "position": "0.16m 1.25m 0.96m",
+    "normal": "0m 1m 0m",
+    "icon": "assets/icons/materials.svg"
+  },
+  "variants": {
+    "default": {
+      "label": "Walnut",
+      "sub": "Natural",
+      "img": "assets/texturesUI/walnut.jpg"
+    },
+    "V0": {
+      "label": "Oak",
+      "sub": "Natural",
+      "img": "assets/texturesUI/oak.jpg"
+    },
+    "V1": {
+      "label": "Acacia",
+      "sub": "Painted",
+      "img": "assets/texturesUI/acacia.jpg"
+    }
+  },
+  "scaleHotspots": [
+    {
+      "targetMesh": "deskTopp",
+      "label": "Scale",
+      "hotspot": {
+        "name": "hotspot-scale-desktop",
+        "position": "-0.25 1 -0.88",
+        "normal": "0m 1m 0m",
+        "icon": "assets/icons/scale.svg"
+      },
+      "scaleValues": {
+        "x": 1,
+        "y": 1.25,
+        "z": 1
+      }
+    }
+  ],
+  "meshHotspot": {
+    "name": "hotspot-mesh-desktop",
+    "position": "0m 0.8m 0m",
+    "normal": "0m 1m 0m",
+    "icon": "assets/icons/meshVariant.svg"
+  },
+  "meshVariants": {
+    "basic": {
+      "label": "Desktop Components",
+      "sub": "Toggle parts",
+      "img": "assets/meshVariants/basic_desktop.png",
+      "meshOperations": [
+        {
+          "meshName": "deskTopp",
+          "action": "show",
+          "label": "Main Desktop",
+          "description": "Primary desktop surface"
+        },
+        {
+          "meshName": "deskTopp001",
+          "action": "hide",
+          "label": "Side Extension",
+          "description": "Left side extension"
+        },
+        {
+          "meshName": "deskTopp.002",
+          "action": "hide",
+          "label": "Back Extension",
+          "description": "Rear extension panel"
+        },
+        {
+          "meshName": "deskTopp.003",
+          "action": "hide",
+          "label": "Corner Piece",
+          "description": "Corner connection piece"
+        }
+      ]
+    }
+  }
+}

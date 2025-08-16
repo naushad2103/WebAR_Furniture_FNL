@@ -1,0 +1,26 @@
+{
+  "hotspot": {
+    "name": "hotspot-3",
+    "position": "0.16m 1.25m 0.96m",
+    "normal": "0m 1m 0m",
+    "icon": "assets/icons/palette.png"
+  },
+  
+  "variants": {
+    "default": {
+      "label": "Walnut",
+      "sub": "Natural",
+      "img": "assets/texturesUI/walnut.jpg"
+    },
+    "V0": {
+      "label": "Oak",
+      "sub": "Natural",
+      "img": "assets/texturesUI/oak.jpg"
+    },
+    "V1": {
+      "label": "Acacia",
+      "sub": "Painted",
+      "img": "assets/texturesUI/acacia.jpg"
+    }
+  }
+}

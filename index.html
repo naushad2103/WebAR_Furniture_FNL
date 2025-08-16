@@ -1,301 +1,977 @@
+
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-    <meta charset="UTF-8" />
+
+<head>
+  <meta charset="UTF-8" />
   <title>Furniture WebAR</title>
-    <meta name="description" content="&lt;model-viewer&gt; template">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link type="text/css" href="./styles.css" rel="stylesheet"/>
-  </head>
+  <meta name="description" content="&lt;model-viewer&gt; template">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link type="text/css" href="./styles.css" rel="stylesheet"/>
+</head>
 
 <body>
 
-<model-viewer id="desk"  ar ar-modes="webxr"  ar-placement="floor" ar-scale="fixed" reveal="auto" camera-orbit="-30deg auto auto" max-camera-orbit="auto 100deg auto" shadow-intensity="1" camera-controls touch-action="pan-y" src="assets/models/desk.glb" alt="A 3D model of an armchair.">
-                 <div class="progress-bar hide" slot="progress-bar">
-          <div class="update-bar"></div>
-      </div>
-       </button><button class="hotspot-icon" id="toggleVariantBtn" slot="hotspot-3" data-position="0.16m 1.25m 0.96m" data-normal="0m 1m 2.220446049250313e-16m" data-visibility-attribute="visible">
-        <img src="assets/icons/palette.png" alt="Choose Material" />
+  <model-viewer id="desk" ar ar-modes="webxr" ar-placement="floor" ar-scale="fixed" reveal="auto"
+    camera-orbit="-30deg auto auto" max-camera-orbit="auto 100deg auto" shadow-intensity="1" camera-controls
+    touch-action="pan-y" src="assets/models/Desk02.glb" alt="A 3D model of furniture.">
+    <div class="progress-bar hide" slot="progress-bar">
+      <div class="update-bar"></div>
+    </div>
+
+    <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="1 -1 1" data-normal="1 0 0"></button>
+    <button slot="hotspot-dim+X-Y" class="dim" data-position="1 -1 0" data-normal="1 0 0"></button>
+    <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="1 -1 -1" data-normal="1 0 0"></button>
+    <button slot="hotspot-dim+X-Z" class="dim" data-position="1 0 -1" data-normal="1 0 0"></button>
+    <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="1 1 -1" data-normal="0 1 0"></button>
+    <button slot="hotspot-dim+Y-Z" class="dim" data-position="0 -1 -1" data-normal="0 1 0"></button>
+    <button slot="hotspot-dot-X+Y-Z" class="dot" data-position="-1 1 -1" data-normal="0 1 0"></button>
+    <button slot="hotspot-dim-X-Z" class="dim" data-position="-1 0 -1" data-normal="-1 0 0"></button>
+    <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="-1 -1 -1" data-normal="-1 0 0"></button>
+    <button slot="hotspot-dim-X-Y" class="dim" data-position="-1 -1 0" data-normal="-1 0 0"></button>
+    <button slot="hotspot-dot-X-Y+Z" class="dot" data-position="-1 -1 1" data-normal="-1 0 0"></button>
+
+    <svg id="dimLines" width="100%" height="100dvh" xmlns="http://www.w3.org/2000/svg" class="dimensionLineContainer">
+      <line class="dimensionLine"></line>
+      <line class="dimensionLine"></line>
+      <line class="dimensionLine"></line>
+      <line class="dimensionLine"></line>
+      <line class="dimensionLine"></line>
+    </svg>
+
+    <div id="material-info"></div>
+    <div id="variant-swatches" class="variant-panel"></div>
+    <div id="mesh-variant-swatches" class="variant-panel"></div>
+
+
+    <!-- Icon Panel Controls -->
+    <div class="side-panel">
+      <button id="products-btn" class="panel-icon active" data-tooltip="Products">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </button>
-  
-  <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="1 -1 1" data-normal="1 0 0"></button>
-                  <button slot="hotspot-dim+X-Y" class="dim" data-position="1 -1 0" data-normal="1 0 0"></button>
-                  <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="1 -1 -1" data-normal="1 0 0"></button>
-                  <button slot="hotspot-dim+X-Z" class="dim" data-position="1 0 -1" data-normal="1 0 0"></button>
-                  <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="1 1 -1" data-normal="0 1 0"></button>
-                  <button slot="hotspot-dim+Y-Z" class="dim" data-position="0 -1 -1" data-normal="0 1 0"></button>
-                  <button slot="hotspot-dot-X+Y-Z" class="dot" data-position="-1 1 -1" data-normal="0 1 0"></button>
-                  <button slot="hotspot-dim-X-Z" class="dim" data-position="-1 0 -1" data-normal="-1 0 0"></button>
-                  <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="-1 -1 -1" data-normal="-1 0 0"></button>
-                  <button slot="hotspot-dim-X-Y" class="dim" data-position="-1 -1 0" data-normal="-1 0 0"></button>
-                  <button slot="hotspot-dot-X-Y+Z" class="dot" data-position="-1 -1 1" data-normal="-1 0 0"></button>
-                  
-                
+      <button id="dimensions-btn" class="panel-icon" data-tooltip="Dimensions">
+       <svg fill="currentColor" height="20px" width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 406.02 406.02" xml:space="preserve">
+         
+         <g>
+			<path fill="currentColor" d="M398,279.176H8c-4.418,0-8,3.582-8,8v90c0,4.418,3.582,8,8,8h390c4.418,0,8-3.582,8-8v-90
+				C406,282.758,402.418,279.176,398,279.176z M390,369.176h-21.5v-37c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v37h-19v-24.833
+				c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v24.833h-19v-37c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v37h-19v-24.833
+				c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v24.833h-19v-37c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v37h-19v-24.833
+				c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v24.833h-19v-37c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v37h-19v-24.833
+				c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v24.833h-19v-37c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v37h-19v-24.833
+				c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v24.833H16v-74h374V369.176z"/>
+			<path fill="currentColor" d="M8,232.843h390c0.01,0,0.014,0,0.02,0c4.419,0,8-3.582,8-8c0-2.373-1.033-4.505-2.675-5.971L208.671,23.201
+				c-1.501-1.509-3.542-2.357-5.671-2.357c-2.129,0-4.17,0.849-5.671,2.357l-195,196c-2.28,2.291-2.957,5.729-1.716,8.714
+				C1.854,230.899,4.768,232.843,8,232.843z M203,40.186l175.756,176.657H316v-7.726c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8
+				v7.726h-19v-18c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v18h-19v-7.726c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v7.726h-19v-18
+				c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v18h-19v-7.726c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v7.726h-19v-18
+				c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v18h-19v-7.726c0-4.418-3.582-8-8-8c-4.418,0-8,3.582-8,8v7.726H27.244L203,40.186z"/>
+			<path fill="currentColor" d="M140.303,177.843h125.395c0.006,0,0.012,0,0.02,0c4.419,0,8-3.582,8-8c0-2.374-1.033-4.506-2.675-5.971l-62.371-62.69
+				c-1.501-1.509-3.542-2.357-5.671-2.357c-2.129,0-4.17,0.849-5.671,2.357l-62.697,63.019c-2.28,2.291-2.957,5.729-1.716,8.714
+				C134.157,175.899,137.071,177.843,140.303,177.843z M203,118.168l43.453,43.676h-86.906L203,118.168z"/>
+		</g>
+        </svg>
+      </button>
+      <button id="hotspots-btn" class="panel-icon active" data-tooltip="Hotspots">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+         
+<path fill="currentColor" clip-rule="evenodd" d="M12 11.6495C11.3096 11.6495 10.75 12.2091 10.75 12.8995C10.75 13.5898 11.3096 14.1495 12 14.1495C12.6904 14.1495 13.25 13.5898 13.25 12.8995C13.25 12.2091 12.6904 11.6495 12 11.6495ZM9.25 12.8995C9.25 11.3807 10.4812 10.1495 12 10.1495C13.5188 10.1495 14.75 11.3807 14.75 12.8995C14.75 14.4183 13.5188 15.6495 12 15.6495C10.4812 15.6495 9.25 14.4183 9.25 12.8995Z" fill="#000000"/>
+<path fill="currentColor" clip-rule="evenodd" d="M12 7.64948C10.9617 7.64948 9.94662 7.95738 9.08326 8.53426C8.2199 9.11114 7.547 9.93108 7.14964 10.8904C6.75228 11.8497 6.64831 12.9053 6.85088 13.9237C7.05345 14.9421 7.55347 15.8776 8.28769 16.6118C8.58059 16.9047 8.58059 17.3796 8.28769 17.6724C7.9948 17.9653 7.51993 17.9653 7.22703 17.6724C6.28303 16.7284 5.64015 15.5257 5.3797 14.2163C5.11925 12.907 5.25292 11.5498 5.76382 10.3164C6.27471 9.08296 7.13987 8.02876 8.2499 7.28706C9.35994 6.54536 10.665 6.14948 12 6.14948C13.335 6.14948 14.6401 6.54536 15.7501 7.28706C16.8601 8.02876 17.7253 9.08296 18.2362 10.3164C18.7471 11.5498 18.8808 12.907 18.6203 14.2163C18.3599 15.5257 17.717 16.7284 16.773 17.6724C16.4801 17.9653 16.0052 17.9653 15.7123 17.6724C15.4194 17.3796 15.4194 16.9047 15.7123 16.6118C16.4465 15.8776 16.9466 14.9421 17.1491 13.9237C17.3517 12.9053 17.2477 11.8497 16.8504 10.8904C16.453 9.93108 15.7801 9.11114 14.9167 8.53426C14.0534 7.95738 13.0384 7.64948 12 7.64948Z" fill="#000000"/>
+<path fill="currentColor" clip-rule="evenodd" d="M12.0001 3.75C10.1905 3.75 8.42152 4.28661 6.9169 5.29197C5.41227 6.29733 4.23956 7.72628 3.54705 9.39813C2.85455 11.07 2.67336 12.9096 3.0264 14.6845C3.37943 16.4593 4.25083 18.0896 5.53041 19.3692C5.82331 19.662 5.82331 20.1369 5.53041 20.4298C5.23752 20.7227 4.76265 20.7227 4.46975 20.4298C2.9804 18.9405 1.96613 17.0429 1.55522 14.9771C1.14431 12.9113 1.3552 10.77 2.16123 8.82411C2.96727 6.87817 4.33224 5.21494 6.08354 4.04476C7.83484 2.87458 9.89381 2.25 12.0001 2.25C14.1063 2.25 16.1653 2.87458 17.9166 4.04476C19.6679 5.21494 21.0329 6.87817 21.8389 8.82411C22.645 10.77 22.8559 12.9113 22.4449 14.9771C22.034 17.0429 21.0198 18.9405 19.5304 20.4298C19.2375 20.7227 18.7626 20.7227 18.4697 20.4298C18.1768 20.1369 18.1768 19.662 18.4697 19.3692C19.7493 18.0896 20.6207 16.4593 20.9738 14.6845C21.3268 12.9096 21.1456 11.07 20.4531 9.39813C19.7606 7.72628 18.5879 6.29733 17.0833 5.29197C15.5786 4.28661 13.8097 3.75 12.0001 3.75Z" fill="#000000"/>
 
-                  <svg id="dimLines" width="100%" height="100dvh" xmlns="http://www.w3.org/2000/svg" class="dimensionLineContainer">
-                    <line class="dimensionLine"></line>
-                    <line class="dimensionLine"></line>
-                    <line class="dimensionLine"></line>
-                    <line class="dimensionLine"></line>
-                    <line class="dimensionLine"></line>
-                  </svg>
+        </svg>
+      </button>
+      <button id="theme-btn" class="panel-icon" data-tooltip="Toggle Theme">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="sun-icon" d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle class="sun-icon" cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+          <path class="moon-icon" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" fill="currentColor" style="display: none;"/>
+        </svg>
+      </button>
+    </div>
 
-                <button id="ar-button">View in AR</button>
-                <div id="material-info"></div>
-                  <div id="controls" class="dim glass">
-                    <label for="src">Product:</label>
-                    <select id="src">
-                      <option value="assets/models/desk.glb">Desk</option>
-                      <option value="assets/models/eames_chair.glb">Chair</option>
-                      <option value="assets/models/pwood_basic_veneer.glb">Cactus</option>
-                    </select><br>
+    <!-- Product Selection Panel -->
+    <div id="product-panel" class="product-panel">
+      <div class="product-panel-header">Select Product</div>
+      <div class="product-item active" data-src="assets/models/Desk02.glb">Desk</div>
+      <div class="product-item" data-src="assets/models/eames_chair.glb">Premium_Chair</div>
+      <div class="product-item" data-src="assets/models/pwood_basic_veneer.glb">Wood_Chair</div>
+    </div>
 
-                    <label for="show-dimensions">Show Dimensions:</label>
-                    <input id="show-dimensions" type="checkbox" >
-                  </div>
-
-  <div id="variant-swatches" class="variant-panel">
-  
-    
-</div>
-                </model-viewer>
-
-             
    
-              <script src="script.js"></script>
-          <script type="module">
-  const modelViewer = document.querySelector("model-viewer#desk");
-const swatchContainer = document.getElementById("variant-swatches");
-  const checkbox = modelViewer.querySelector('#show-dimensions');
-const dimElements = [
-  ...modelViewer.querySelectorAll('button.dim'),
-  modelViewer.querySelector('#dimLines')
-];
- modelViewer.querySelector('#src').addEventListener('input', (event) => {
-                    modelViewer.src = event.target.value;
-                   
-                  });
+  </model-viewer>
 
-                 
+    <script type="module">
+    const modelViewer = document.querySelector("model-viewer#desk");
+    const swatchContainer = document.getElementById("variant-swatches");
+    const meshSwatchContainer = document.getElementById("mesh-variant-swatches");
+    
+    // Icon panel elements
+    const productsBtn = document.getElementById("products-btn");
+    const productPanel = document.getElementById("product-panel");
+    const dimensionsBtn = document.getElementById("dimensions-btn");
+    const hotspotsBtn = document.getElementById("hotspots-btn");
+    const themeBtn = document.getElementById("theme-btn");
+    
+    const dimElements = [
+      ...modelViewer.querySelectorAll('button.dim'),
+      modelViewer.querySelector('#dimLines')
+    ];
+    
+    let scaleStates = {};
+    let meshStates = {};
+    let showDimensions = false;
+    let showHotspots = true;
+    let isDarkTheme = false;
 
-modelViewer.addEventListener('camera-change', () => {
-  const hotspot = modelViewer.queryHotspot('hotspot-3');
-  if (hotspot && hotspot.canvasPosition) {
-    swatchContainer.style.left = `${hotspot.canvasPosition.x+120}px`;
-    swatchContainer.style.top = `${hotspot.canvasPosition.y + 40}px`; // Slight offset
-    swatchContainer.style.transform = `translate(-50%, 0)`;
-  }
-});
-const VARIANT_LABELS = {
-   "default": { label: "Walnut", sub: "Natural", img: "assets/texturesUI/walnut.jpg" },
-  "V0": { label: "Oak", sub: "Natural", img: "assets/texturesUI/oak.jpg" },
-  "V1": { label: "Acacia", sub: "Painted", img: "assets/texturesUI/acacia.jpg" }
-};
+    // Theme toggle functionality
+    function toggleTheme() {
+      isDarkTheme = !isDarkTheme;
+      document.body.classList.toggle('dark-theme', isDarkTheme);
+      
+      // Update theme button icon
+      const sunIcon = themeBtn.querySelectorAll('.sun-icon');
+      const moonIcon = themeBtn.querySelector('.moon-icon');
+      
+      if (isDarkTheme) {
+        sunIcon.forEach(el => el.style.display = 'none');
+        moonIcon.style.display = 'block';
+      } else {
+        sunIcon.forEach(el => el.style.display = 'block');
+        moonIcon.style.display = 'none';
+      }
+    }
 
-const toggleButton = document.getElementById("toggleVariantBtn");
+    themeBtn.addEventListener('click', toggleTheme);
 
+    // Add the missing toggleAllHotspots function
+    function toggleAllHotspots(show) {
+      const hotspots = modelViewer.querySelectorAll('.hotspot-icon');
+      hotspots.forEach(hotspot => {
+        if (show) {
+          hotspot.classList.remove('hide');
+        } else {
+          hotspot.classList.add('hide');
+        }
+      });
+    }
 
-toggleButton.addEventListener("click", () => {
-  swatchContainer.classList.toggle("show");
-});
-
-const arButton = document.getElementById("ar-button");
-
-    arButton.addEventListener("click", () => {
-      modelViewer.activateAR();
+    // Icon panel functionality
+    productsBtn.addEventListener('click', () => {
+      productPanel.classList.toggle('show');
+      productsBtn.classList.toggle('active');
     });
 
-modelViewer.addEventListener("load", () => {
-  for (const key in VARIANT_LABELS) {
-    const { label, sub, img } = VARIANT_LABELS[key];
-
-    const option = document.createElement("div");
-    option.className = "variant-option";
-    option.dataset.variant = key;
-
-    option.innerHTML = `
-    <div class="label">
-    <strong>${label}</strong>
-    <span class="sub">${sub}</span>
-  </div>
-  <div class="swatch" style="${img ? `background-image: url('${img}')` : 'background:#eee'}"></div>
-`;
-
-    option.addEventListener("click", () => {
-      modelViewer.variantName = key === "default" ? null : key;
+    dimensionsBtn.addEventListener('click', () => {
+      showDimensions = !showDimensions;
+      dimensionsBtn.classList.toggle('dimensions-active');
+      setVisibility(showDimensions);
     });
 
-    swatchContainer.appendChild(option);
-  }
-});
-document.addEventListener("click", (e) => {
-  if (!swatchContainer.contains(e.target) && e.target !== toggleButton) {
-    swatchContainer.classList.remove("show");
-  }
-});
+    // Add hotspots toggle functionality
+    hotspotsBtn.addEventListener('click', () => {
+      showHotspots = !showHotspots;
+      hotspotsBtn.classList.toggle('active');
+      toggleAllHotspots(showHotspots);
+    });
 
+    // Product selection
+    productPanel.addEventListener('click', (event) => {
+      if (event.target.classList.contains('product-item')) {
+        // Update active product
+        productPanel.querySelectorAll('.product-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // Load new model
+        const src = event.target.dataset.src;
+        modelViewer.src = src;
+        scaleStates = {};
+        meshStates = {};
+        
+        // Close product panel
+        productPanel.classList.remove('show');
+        productsBtn.classList.remove('active');
+      }
+    });
 
-  const svg = modelViewer.querySelector('#dimLines');
+    // Close product panel when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!productPanel.contains(e.target) && e.target !== productsBtn) {
+        productPanel.classList.remove('show');
+        productsBtn.classList.remove('active');
+      }
+    });
 
-function resizeAndPositionSVG() {
-  const rect = modelViewer.getBoundingClientRect();
-  svg.setAttribute("width", rect.width);
-  svg.setAttribute("height", rect.height);
-  svg.style.position = "absolute";
-  svg.style.top = `${rect.top}px`;
-  svg.style.left = `${rect.left}px`;
-  svg.style.pointerEvents = "none";
-}
+    // Existing dimension functionality
+    function setVisibility(visible) {
+      dimElements.forEach((element) => {
+        if (visible) {
+          element.classList.remove('hide');
+        } else {
+          element.classList.add('hide');
+        }
+      });
+    }
 
-window.addEventListener("resize", resizeAndPositionSVG);
-window.addEventListener("scroll", resizeAndPositionSVG);
-window.addEventListener("orientationchange", resizeAndPositionSVG);
-modelViewer.addEventListener("load", resizeAndPositionSVG);
-resizeAndPositionSVG();
+    // Ensure dimensions are hidden when entering AR
+    modelViewer.addEventListener('ar-status', (event) => {
+      setVisibility(showDimensions && event.detail.status !== 'session-started');
+    });
 
+    // Set initial visibility on page load
+    setVisibility(showDimensions);
 
+    // Camera change handler
+    modelViewer.addEventListener('camera-change', () => {
+      // Update material variant swatch position
+      const materialHotspot = modelViewer.queryHotspot('hotspot-3');
+      if (materialHotspot && materialHotspot.canvasPosition) {
+        swatchContainer.style.left = `${materialHotspot.canvasPosition.x + 120}px`;
+        swatchContainer.style.top = `${materialHotspot.canvasPosition.y + 40}px`;
+        swatchContainer.style.transform = `translate(-50%, 0)`;
+      }
 
-                  function setVisibility(visible) {
-                    dimElements.forEach((element) => {
-                      if (visible) {
-                        element.classList.remove('hide');
-                      } else {
-                        element.classList.add('hide');
-                      }
-                    });
+      // Update mesh variant swatch position
+      const meshHotspot = modelViewer.queryHotspot('hotspot-mesh-desktop');
+      if (meshHotspot && meshHotspot.canvasPosition) {
+        meshSwatchContainer.style.left = `${meshHotspot.canvasPosition.x + 120}px`;
+        meshSwatchContainer.style.top = `${meshHotspot.canvasPosition.y + 40}px`;
+        meshSwatchContainer.style.transform = `translate(-50%, 0)`;
+      }
+    });
+
+    // Modified fetchModelConfig function with better error handling
+    async function fetchModelConfig(src) {
+      const filename = src.split('/').pop().replace('.glb', '');
+      const jsonPath = `assets/configs/${filename}.json`;
+      try {
+        const response = await fetch(jsonPath);
+        if (!response.ok) {
+          console.info(`ℹ️ No config found for: ${jsonPath}`);
+          return null;
+        }
+        const text = await response.text();
+        if (!text.trim()) {
+          console.info(`ℹ️ Empty config file: ${jsonPath}`);
+          return null;
+        }
+        return JSON.parse(text);
+      } catch (err) {
+        console.warn(`⚠️ Failed to load config for ${src}:`, err.message);
+        return null;
+      }
+    }
+
+    function updateVariantsAndHotspot(config) {
+      swatchContainer.innerHTML = "";
+      const oldHotspot = modelViewer.querySelector("#toggleVariantBtn");
+      if (oldHotspot) oldHotspot.remove();
+
+      if (config && config.hotspot) {
+        const btn = document.createElement("button");
+        btn.className = "hotspot-icon";
+        btn.id = "toggleVariantBtn";
+        btn.setAttribute("slot", config.hotspot.name);
+        btn.setAttribute("data-position", config.hotspot.position);
+        btn.setAttribute("data-normal", config.hotspot.normal);
+        btn.setAttribute("data-visibility-attribute", "visible");
+        btn.innerHTML = `<img src="${config.hotspot.icon}" alt="Choose Material" />`;
+        modelViewer.appendChild(btn);
+
+        btn.addEventListener("click", () => {
+          swatchContainer.classList.toggle("show");
+          meshSwatchContainer.classList.remove("show");
+        });
+      }
+
+      if (config && config.variants) {
+        for (const key in config.variants) {
+          const { label, sub, img } = config.variants[key];
+          const option = document.createElement("div");
+          option.className = "variant-option";
+          option.dataset.variant = key;
+          option.innerHTML = `
+              <div class="label">
+                <strong>${label}</strong>
+                <span class="sub">${sub}</span>
+              </div>
+              <div class="swatch" style="background-image: url('${img}')"></div>
+            `;
+          option.addEventListener("click", () => {
+            modelViewer.variantName = key === "default" ? null : key;
+          });
+          swatchContainer.appendChild(option);
+        }
+      }
+    }
+
+    function updateMeshVariantsAndHotspot(config) {
+      meshSwatchContainer.innerHTML = "";
+      const oldMeshHotspot = modelViewer.querySelector("#toggleMeshVariantBtn");
+      if (oldMeshHotspot) oldMeshHotspot.remove();
+
+      if (config && config.meshHotspot) {
+        const btn = document.createElement("button");
+        btn.className = "hotspot-icon";
+        btn.id = "toggleMeshVariantBtn";
+        btn.setAttribute("slot", config.meshHotspot.name);
+        btn.setAttribute("data-position", config.meshHotspot.position);
+        btn.setAttribute("data-normal", config.meshHotspot.normal);
+        btn.setAttribute("data-visibility-attribute", "visible");
+        btn.innerHTML = `<img src="${config.meshHotspot.icon}" alt="Choose Mesh Components" />`;
+        modelViewer.appendChild(btn);
+
+        btn.addEventListener("click", () => {
+          meshSwatchContainer.classList.toggle("show");
+          swatchContainer.classList.remove("show");
+
+          if (meshSwatchContainer.classList.contains("show") && btn.canvasPosition) {
+            meshSwatchContainer.style.left = `${btn.canvasPosition.x + 120}px`;
+            meshSwatchContainer.style.top = `${btn.canvasPosition.y + 40}px`;
+            meshSwatchContainer.style.transform = `translate(-50%, 0)`;
+          }
+        });
+      }
+
+      if (config && config.meshVariants && config.meshVariants.basic) {
+        const basicVariant = config.meshVariants.basic;
+
+        const header = document.createElement("div");
+        header.className = "mesh-panel-header";
+        header.innerHTML = `
+      <h3>${basicVariant.label}</h3>
+      <p>${basicVariant.sub}</p>
+    `;
+        meshSwatchContainer.appendChild(header);
+
+        if (basicVariant.meshOperations) {
+          basicVariant.meshOperations.forEach((operation, index) => {
+            const option = document.createElement("div");
+            option.className = "mesh-variant-option";
+            option.dataset.meshName = operation.meshName;
+
+            meshStates[operation.meshName] = operation.action === "show";
+
+            option.innerHTML = `
+          <div class="mesh-content">
+            <div class="mesh-info">
+              <strong>${operation.label}</strong>
+              <span class="mesh-description">${operation.description || ''}</span>
+            </div>
+            <div class="mesh-active-indicator"></div>
+          </div>
+        `;
+
+            if (meshStates[operation.meshName]) {
+              option.classList.add('active');
+            }
+
+            option.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const meshName = operation.meshName;
+
+              const allOptions = meshSwatchContainer.querySelectorAll('.mesh-variant-option');
+              allOptions.forEach(otherOption => {
+                otherOption.classList.remove('active');
+              });
+
+              option.classList.add('active');
+
+              basicVariant.meshOperations.forEach(otherOperation => {
+                if (otherOperation.meshName !== meshName) {
+                  meshStates[otherOperation.meshName] = false;
+                  toggleSingleMesh(otherOperation.meshName, false);
+                }
+              });
+
+              meshStates[meshName] = true;
+              toggleSingleMesh(meshName, true);
+
+              setTimeout(() => {
+                forceModelViewerUpdate();
+              }, 10);
+            });
+
+            meshSwatchContainer.appendChild(option);
+          });
+        }
+      }
+    }
+
+    function toggleSingleMesh(meshName, shouldShow) {
+      if (modelViewer.model) {
+        const hierarchySymbol = Object.getOwnPropertySymbols(modelViewer.model).find(s => s.toString().includes('hierarchy'));
+        const primitivesSymbol = Object.getOwnPropertySymbols(modelViewer.model).find(s => s.toString().includes('primitives'));
+
+        if (hierarchySymbol) {
+          const hierarchy = modelViewer.model[hierarchySymbol];
+          let targetMesh = null;
+
+          for (const item of hierarchy) {
+            if (item.name === meshName) {
+              targetMesh = item;
+              break;
+            }
+          }
+
+          if (!targetMesh && primitivesSymbol) {
+            const primitives = modelViewer.model[primitivesSymbol];
+            for (const primitive of primitives) {
+              if (primitive.name === meshName) {
+                targetMesh = primitive;
+                break;
+              }
+            }
+          }
+
+          if (targetMesh) {
+            let threeMesh = targetMesh.mesh || targetMesh.object3D;
+            if (!threeMesh) {
+              const symbols = Object.getOwnPropertySymbols(targetMesh);
+              for (const symbol of symbols) {
+                const value = targetMesh[symbol];
+                if (value && value.visible !== undefined) {
+                  threeMesh = value;
+                  break;
+                }
+              }
+            }
+
+            if (threeMesh) {
+              threeMesh.visible = shouldShow;
+              threeMesh.updateMatrix();
+              threeMesh.updateMatrixWorld(true);
+              forceModelViewerUpdate();
+            }
+          }
+        }
+      }
+    }
+
+    function updateScaleHotspots(config) {
+      const existingScaleHotspots = modelViewer.querySelectorAll("[id^='scaleBtn-']");
+      existingScaleHotspots.forEach(hotspot => hotspot.remove());
+
+      scaleStates = {};
+
+      if (config && config.scaleHotspots) {
+        config.scaleHotspots.forEach((scaleConfig, index) => {
+          const btn = document.createElement("button");
+          btn.className = "hotspot-icon";
+          btn.id = `scaleBtn-${scaleConfig.targetMesh}`;
+          btn.setAttribute("slot", scaleConfig.hotspot.name);
+          btn.setAttribute("data-position", scaleConfig.hotspot.position);
+          btn.setAttribute("data-normal", scaleConfig.hotspot.normal);
+          btn.setAttribute("data-visibility-attribute", "visible");
+          btn.innerHTML = `<img src="${scaleConfig.hotspot.icon}" alt="${scaleConfig.label}" />`;
+
+          scaleStates[scaleConfig.targetMesh] = false;
+
+          btn.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            scaleModelMesh(scaleConfig);
+          });
+
+          modelViewer.appendChild(btn);
+        });
+      }
+    }
+
+    function forceModelViewerUpdate() {
+      modelViewer.requestUpdate();
+
+      const currentOrbit = modelViewer.getCameraOrbit();
+      const tinyOffset = 0.0001;
+      modelViewer.cameraOrbit = `${currentOrbit.theta + tinyOffset}rad ${currentOrbit.phi}rad ${currentOrbit.radius}m`;
+
+      setTimeout(() => {
+        modelViewer.cameraOrbit = `${currentOrbit.theta}rad ${currentOrbit.phi}rad ${currentOrbit.radius}m`;
+      }, 1);
+
+      const currentShadowIntensity = modelViewer.shadowIntensity || 1;
+      modelViewer.shadowIntensity = currentShadowIntensity + 0.001;
+      setTimeout(() => {
+        modelViewer.shadowIntensity = currentShadowIntensity;
+      }, 5);
+
+      updateShadows();
+
+      setTimeout(() => {
+        modelViewer.requestUpdate();
+        updateShadows();
+      }, 10);
+
+      setTimeout(() => {
+        modelViewer.requestUpdate();
+      }, 50);
+    }
+    function updateShadows() {
+      try {
+        const shadowSymbols = Object.getOwnPropertySymbols(modelViewer);
+
+        for (const symbol of shadowSymbols) {
+          const symbolStr = symbol.toString();
+          if (symbolStr.includes('shadow') || symbolStr.includes('Shadow')) {
+            const shadowSystem = modelViewer[symbol];
+            if (shadowSystem && typeof shadowSystem.needsUpdate !== 'undefined') {
+              shadowSystem.needsUpdate = true;
+              break;
+            }
+          }
+        }
+
+        const sceneSymbol = shadowSymbols.find(s => s.toString().includes('scene') || s.toString().includes('Scene'));
+        if (sceneSymbol) {
+          const scene = modelViewer[sceneSymbol];
+          if (scene && scene.traverse) {
+            scene.traverse((child) => {
+              if (child.isLight && child.shadow) {
+                child.shadow.needsUpdate = true;
+                if (child.shadow.map) {
+                  child.shadow.map.needsUpdate = true;
+                }
+              }
+              if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+              }
+            });
+          }
+        }
+
+        if (modelViewer.shadowIntensity !== undefined) {
+          const currentIntensity = modelViewer.shadowIntensity;
+          modelViewer.shadowIntensity = 0;
+          setTimeout(() => {
+            modelViewer.shadowIntensity = currentIntensity;
+          }, 10);
+        }
+
+      } catch (error) {
+        try {
+          const originalIntensity = modelViewer.shadowIntensity || 1;
+          modelViewer.shadowIntensity = 0.001;
+
+          setTimeout(() => {
+            modelViewer.shadowIntensity = originalIntensity;
+            modelViewer.requestUpdate();
+          }, 50);
+
+        } catch (fallbackError) {
+          console.log("Fallback shadow update also failed");
+        }
+      }
+    }
+
+    function scaleModelMesh(scaleConfig) {
+      let activeDesktopMesh = null;
+      Object.keys(meshStates).forEach(meshName => {
+        if (meshStates[meshName] && (meshName.includes('deskTopp') || meshName === scaleConfig.targetMesh)) {
+          activeDesktopMesh = meshName;
+        }
+      });
+
+      const targetMeshName = activeDesktopMesh || scaleConfig.targetMesh;
+
+      if (modelViewer.model) {
+        const hierarchySymbol = Object.getOwnPropertySymbols(modelViewer.model).find(s => s.toString().includes('hierarchy'));
+        const primitivesSymbol = Object.getOwnPropertySymbols(modelViewer.model).find(s => s.toString().includes('primitives'));
+
+        if (hierarchySymbol) {
+          const hierarchy = modelViewer.model[hierarchySymbol];
+          let targetMesh = null;
+
+          for (const item of hierarchy) {
+            if (item.name === targetMeshName) {
+              targetMesh = item;
+              break;
+            }
+          }
+
+          if (!targetMesh && primitivesSymbol) {
+            const primitives = modelViewer.model[primitivesSymbol];
+            for (const primitive of primitives) {
+              if (primitive.name === targetMeshName) {
+                targetMesh = primitive;
+                break;
+              }
+            }
+          }
+
+          if (targetMesh) {
+            let threeMesh = null;
+
+            if (targetMesh.mesh) {
+              threeMesh = targetMesh.mesh;
+            } else if (targetMesh.object3D) {
+              threeMesh = targetMesh.object3D;
+            } else {
+              const symbols = Object.getOwnPropertySymbols(targetMesh);
+              for (const symbol of symbols) {
+                const value = targetMesh[symbol];
+                if (value && value.scale && typeof value.scale.set === 'function') {
+                  threeMesh = value;
+                  break;
+                }
+              }
+            }
+
+            if (threeMesh && threeMesh.scale) {
+              if (!threeMesh.visible) {
+                threeMesh.visible = true;
+                meshStates[scaleConfig.targetMesh] = true;
+                
+                const meshOptions = meshSwatchContainer.querySelectorAll('.mesh-variant-option');
+                meshOptions.forEach(option => {
+                  if (option.dataset.meshName === scaleConfig.targetMesh) {
+                    option.classList.add('active');
+                  } else {
+                    option.classList.remove('active');
                   }
+                });
+                
+                Object.keys(meshStates).forEach(meshName => {
+                  if (meshName !== scaleConfig.targetMesh) {
+                    meshStates[meshName] = false;
+                    toggleSingleMesh(meshName, false);
+                  }
+                });
+              }
 
-                  checkbox.addEventListener('change', () => {
-  setVisibility(checkbox.checked);
-});
+              const currentState = scaleStates[targetMeshName];
+              const scaleValues = scaleConfig.scaleValues || { x: 1.5, y: 1.5, z: 1 };
 
-// Ensure dimensions are hidden when entering AR
-modelViewer.addEventListener('ar-status', (event) => {
-  setVisibility(checkbox.checked && event.detail.status !== 'session-started');
-});
+              if (!currentState) {
+                threeMesh.scale.set(scaleValues.x, scaleValues.y, scaleValues.z);
+                scaleStates[targetMeshName] = true;
+              } else {
+                threeMesh.scale.set(1, 1, 1);
+                scaleStates[targetMeshName] = false;
+              }
 
-// ✅ Set initial visibility on page load
-setVisibility(checkbox.checked);
+              threeMesh.updateMatrix();
+              threeMesh.updateMatrixWorld(true);
+              updateShadows();
 
-                  // update svg
-                  function drawLine(svgLine, dotHotspot1, dotHotspot2, dimensionHotspot) {
-                    if (dotHotspot1 && dotHotspot2) {
-                      svgLine.setAttribute('x1', dotHotspot1.canvasPosition.x);
-                      svgLine.setAttribute('y1', dotHotspot1.canvasPosition.y);
-                      svgLine.setAttribute('x2', dotHotspot2.canvasPosition.x);
-                      svgLine.setAttribute('y2', dotHotspot2.canvasPosition.y);
+              const currentOrbit = modelViewer.getCameraOrbit();
+              modelViewer.cameraOrbit = `${currentOrbit.theta}rad ${currentOrbit.phi}rad ${currentOrbit.radius}m`;
+              modelViewer.requestUpdate();
 
-                      // use provided optional hotspot to tie visibility of this svg line to
-                      if (dimensionHotspot && !dimensionHotspot.facingCamera) {
-                        svgLine.classList.add('hide');
-                      }
-                      else {
-                        svgLine.classList.remove('hide');
-                      }
+              setTimeout(() => {
+                updateShadows();
+                modelViewer.requestUpdate();
+              }, 10);
+
+              setTimeout(() => updateShadows(), 100);
+              setTimeout(() => updateShadows(), 300);
+
+              setTimeout(() => {
+                const orbit = modelViewer.getCameraOrbit();
+                modelViewer.cameraOrbit = `${orbit.theta + 0.001}rad ${orbit.phi}rad ${orbit.radius}m`;
+                setTimeout(() => {
+                  modelViewer.cameraOrbit = `${orbit.theta}rad ${orbit.phi}rad ${orbit.radius}m`;
+                  updateShadows();
+                }, 10);
+              }, 20);
+            }
+          }
+        }
+      }
+    }
+
+    function initializeDefaultMeshVisibility(config) {
+      if (config && config.meshVariants && config.meshVariants.basic) {
+        setTimeout(() => {
+          applyMeshVariant(config.meshVariants.basic);
+          updateMeshVariantUI(config);
+        }, 100);
+      }
+    }
+
+    function updateMeshVariantUI(config) {
+      if (config && config.meshVariants && config.meshVariants.basic) {
+        const basicVariant = config.meshVariants.basic;
+        if (basicVariant.meshOperations) {
+          basicVariant.meshOperations.forEach((operation) => {
+            const options = meshSwatchContainer.querySelectorAll('.mesh-variant-option');
+            options.forEach(option => {
+              if (option.dataset.meshName === operation.meshName) {
+                const isVisible = meshStates[operation.meshName];
+                if (isVisible) {
+                  option.classList.add('active');
+                } else {
+                  option.classList.remove('active');
+                }
+              }
+            });
+          });
+        }
+      }
+    }
+
+    function applyMeshVariant(variant) {
+      if (modelViewer.model) {
+        const hierarchySymbol = Object.getOwnPropertySymbols(modelViewer.model).find(s => s.toString().includes('hierarchy'));
+        const primitivesSymbol = Object.getOwnPropertySymbols(modelViewer.model).find(s => s.toString().includes('primitives'));
+
+        if (hierarchySymbol) {
+          const hierarchy = modelViewer.model[hierarchySymbol];
+
+          if (variant.meshOperations) {
+            variant.meshOperations.forEach(operation => {
+              let targetMesh = null;
+
+              for (const item of hierarchy) {
+                if (item.name === operation.meshName) {
+                  targetMesh = item;
+                  break;
+                }
+              }
+
+              if (!targetMesh && primitivesSymbol) {
+                const primitives = modelViewer.model[primitivesSymbol];
+                for (const primitive of primitives) {
+                  if (primitive.name === operation.meshName) {
+                    targetMesh = primitive;
+                    break;
+                  }
+                }
+              }
+
+              if (targetMesh) {
+                let threeMesh = targetMesh.mesh || targetMesh.object3D;
+                if (!threeMesh) {
+                  const symbols = Object.getOwnPropertySymbols(targetMesh);
+                  for (const symbol of symbols) {
+                    const value = targetMesh[symbol];
+                    if (value && value.visible !== undefined) {
+                      threeMesh = value;
+                      break;
                     }
                   }
+                }
 
-                  const dimLines = modelViewer.querySelectorAll('line');
+                if (threeMesh) {
+                  switch (operation.action) {
+                    case 'hide':
+                      threeMesh.visible = false;
+                      meshStates[operation.meshName] = false;
+                      break;
+                    case 'show':
+                      threeMesh.visible = true;
+                      meshStates[operation.meshName] = true;
+                      break;
+                    case 'toggle':
+                      threeMesh.visible = !threeMesh.visible;
+                      meshStates[operation.meshName] = threeMesh.visible;
+                      break;
+                    case 'scale':
+                      if (operation.scale) {
+                        threeMesh.scale.set(operation.scale.x, operation.scale.y, operation.scale.z);
+                      }
+                      break;
+                    case 'transform':
+                      if (operation.position) {
+                        threeMesh.position.set(operation.position.x, operation.position.y, operation.position.z);
+                      }
+                      if (operation.rotation) {
+                        threeMesh.rotation.set(operation.rotation.x, operation.rotation.y, operation.rotation.z);
+                      }
+                      break;
+                  }
 
-                  const renderSVG = () => {
-                    drawLine(dimLines[0], modelViewer.queryHotspot('hotspot-dot+X-Y+Z'), modelViewer.queryHotspot('hotspot-dot+X-Y-Z'), modelViewer.queryHotspot('hotspot-dim+X-Y'));
-                    drawLine(dimLines[1], modelViewer.queryHotspot('hotspot-dot+X-Y-Z'), modelViewer.queryHotspot('hotspot-dot+X+Y-Z'), modelViewer.queryHotspot('hotspot-dim+X-Z'));
-                    drawLine(dimLines[2], modelViewer.queryHotspot('hotspot-dot+X+Y-Z'), modelViewer.queryHotspot('hotspot-dot-X+Y-Z')); // always visible
-                    drawLine(dimLines[3], modelViewer.queryHotspot('hotspot-dot-X+Y-Z'), modelViewer.queryHotspot('hotspot-dot-X-Y-Z'), modelViewer.queryHotspot('hotspot-dim-X-Z'));
-                    drawLine(dimLines[4], modelViewer.queryHotspot('hotspot-dot-X-Y-Z'), modelViewer.queryHotspot('hotspot-dot-X-Y+Z'), modelViewer.queryHotspot('hotspot-dim-X-Y'));
-                  };
+                  threeMesh.updateMatrix();
+                  threeMesh.updateMatrixWorld(true);
+                }
+              }
+            });
 
+            updateShadows();
+            modelViewer.requestUpdate();
+
+            setTimeout(() => {
+              modelViewer.requestUpdate();
+              updateShadows();
+            }, 50);
+          }
+        }
+      }
+    }
+
+    document.addEventListener("click", (e) => {
+      const materialToggleBtn = document.getElementById("toggleVariantBtn");
+      const meshToggleBtn = document.getElementById("toggleMeshVariantBtn");
       
-   
-                  modelViewer.addEventListener('load', () => {
-                    const center = modelViewer.getBoundingBoxCenter();
-                    const size = modelViewer.getDimensions();
-                    const x2 = size.x / 2;
-                    const y2 = size.y / 2;
-                    const z2 = size.z / 2;
+      const isClickOnModelViewer = e.target === modelViewer || modelViewer.contains(e.target);
+      const isClickOnHotspot = e.target.classList.contains('hotspot-icon') || e.target.closest('.hotspot-icon');
+      
+      if (!swatchContainer.contains(e.target) && e.target !== materialToggleBtn) {
+        if (isClickOnModelViewer || isClickOnHotspot) {
+          swatchContainer.classList.remove("show");
+        }
+      }
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dot+X-Y+Z',
-                      position: `${center.x + x2} ${center.y - y2} ${center.z + z2}`
-                    });
+      if (!meshSwatchContainer.contains(e.target) && e.target !== meshToggleBtn) {
+        if (isClickOnModelViewer || isClickOnHotspot) {
+          meshSwatchContainer.classList.remove("show");
+        }
+      }
+    });
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dim+X-Y',
-                      position: `${center.x + x2 * 1.2} ${center.y - y2 * 1.1} ${center.z}`
-                    });
-                    modelViewer.querySelector('button[slot="hotspot-dim+X-Y"]').textContent =
-                      `${(size.z * 100).toFixed(0)} cm`;
+    modelViewer.addEventListener("load", async () => {
+      const config = await fetchModelConfig(modelViewer.src);
+      updateVariantsAndHotspot(config);
+      updateMeshVariantsAndHotspot(config);
+      updateScaleHotspots(config);
+      initializeDefaultMeshVisibility(config);
+      
+      // Apply initial hotspot visibility state
+      setTimeout(() => {
+        toggleAllHotspots(showHotspots);
+      }, 100);
+    });
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dot+X-Y-Z',
-                      position: `${center.x + x2} ${center.y - y2} ${center.z - z2}`
-                    });
+    const svg = modelViewer.querySelector('#dimLines');
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dim+X-Z',
-                      position: `${center.x + x2 * 1.2} ${center.y} ${center.z - z2 * 1.2}`
-                    });
-                    modelViewer.querySelector('button[slot="hotspot-dim+X-Z"]').textContent =
-                      `${(size.y * 100).toFixed(0)} cm`;
+    function resizeAndPositionSVG() {
+      const rect = modelViewer.getBoundingClientRect();
+      svg.setAttribute("width", rect.width);
+      svg.setAttribute("height", rect.height);
+      svg.style.position = "absolute";
+      svg.style.top = `${rect.top}px`;
+      svg.style.left = `${rect.left}px`;
+      svg.style.pointerEvents = "none";
+    }
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dot+X+Y-Z',
-                      position: `${center.x + x2} ${center.y + y2} ${center.z - z2}`
-                    });
+    window.addEventListener("resize", resizeAndPositionSVG);
+    window.addEventListener("scroll", resizeAndPositionSVG);
+    window.addEventListener("orientationchange", resizeAndPositionSVG);
+    modelViewer.addEventListener("load", resizeAndPositionSVG);
+    resizeAndPositionSVG();
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dim+Y-Z',
-                      position: `${center.x} ${center.y + y2 * 1.1} ${center.z - z2 * 1.1}`
-                    });
-                    modelViewer.querySelector('button[slot="hotspot-dim+Y-Z"]').textContent =
-                      `${(size.x * 100).toFixed(0)} cm`;
+    function drawLine(svgLine, dotHotspot1, dotHotspot2, dimensionHotspot) {
+      if (dotHotspot1 && dotHotspot2) {
+        svgLine.setAttribute('x1', dotHotspot1.canvasPosition.x);
+        svgLine.setAttribute('y1', dotHotspot1.canvasPosition.y);
+        svgLine.setAttribute('x2', dotHotspot2.canvasPosition.x);
+        svgLine.setAttribute('y2', dotHotspot2.canvasPosition.y);
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dot-X+Y-Z',
-                      position: `${center.x - x2} ${center.y + y2} ${center.z - z2}`
-                    });
+        if (dimensionHotspot && !dimensionHotspot.facingCamera) {
+          svgLine.classList.add('hide');
+        }
+        else {
+          svgLine.classList.remove('hide');
+        }
+      }
+    }
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dim-X-Z',
-                      position: `${center.x - x2 * 1.2} ${center.y} ${center.z - z2 * 1.2}`
-                    });
-                    modelViewer.querySelector('button[slot="hotspot-dim-X-Z"]').textContent =
-                      `${(size.y * 100).toFixed(0)} cm`;
+    const dimLines = modelViewer.querySelectorAll('line');
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dot-X-Y-Z',
-                      position: `${center.x - x2} ${center.y - y2} ${center.z - z2}`
-                    });
+    const renderSVG = () => {
+      drawLine(dimLines[0], modelViewer.queryHotspot('hotspot-dot+X-Y+Z'), modelViewer.queryHotspot('hotspot-dot+X-Y-Z'), modelViewer.queryHotspot('hotspot-dim+X-Y'));
+      drawLine(dimLines[1], modelViewer.queryHotspot('hotspot-dot+X-Y-Z'), modelViewer.queryHotspot('hotspot-dot+X+Y-Z'), modelViewer.queryHotspot('hotspot-dim+X-Z'));
+      drawLine(dimLines[2], modelViewer.queryHotspot('hotspot-dot+X+Y-Z'), modelViewer.queryHotspot('hotspot-dot-X+Y-Z'));
+      drawLine(dimLines[3], modelViewer.queryHotspot('hotspot-dot-X+Y-Z'), modelViewer.queryHotspot('hotspot-dot-X-Y-Z'), modelViewer.queryHotspot('hotspot-dim-X-Z'));
+      drawLine(dimLines[4], modelViewer.queryHotspot('hotspot-dot-X-Y-Z'), modelViewer.queryHotspot('hotspot-dot-X-Y+Z'), modelViewer.queryHotspot('hotspot-dim-X-Y'));
+    };
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dim-X-Y',
-                      position: `${center.x - x2 * 1.2} ${center.y - y2 * 1.1} ${center.z}`
-                    });
-                    modelViewer.querySelector('button[slot="hotspot-dim-X-Y"]').textContent =
-                      `${(size.z * 100).toFixed(0)} cm`;
+    modelViewer.addEventListener('load', () => {
+      const center = modelViewer.getBoundingBoxCenter();
+      const size = modelViewer.getDimensions();
+      const x2 = size.x / 2;
+      const y2 = size.y / 2;
+      const z2 = size.z / 2;
 
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-dot-X-Y+Z',
-                      position: `${center.x - x2} ${center.y - y2} ${center.z + z2}`
-                    });
+      modelViewer.updateHotspot({
+        name: 'hotspot-dot+X-Y+Z',
+        position: `${center.x + x2} ${center.y - y2} ${center.z + z2}`
+      });
 
-                    // Update material hotspot positions
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-material-top',
-                      position: `${center.x} ${center.y + y2 + 0.2} ${center.z}`
-                    });
-                    
-                    modelViewer.updateHotspot({
-                      name: 'hotspot-material-legs',
-                      position: `${center.x} ${center.y - y2 - 0.2} ${center.z}`
-                    });
+      modelViewer.updateHotspot({
+        name: 'hotspot-dim+X-Y',
+        position: `${center.x + x2 * 1.2} ${center.y - y2 * 1.1} ${center.z}`
+      });
+      modelViewer.querySelector('button[slot="hotspot-dim+X-Y"]').textContent =
+        `${(size.z * 100).toFixed(0)} cm`;
 
-                    renderSVG();
-                    modelViewer.addEventListener('camera-change', renderSVG);
-                  });
+      modelViewer.updateHotspot({
+        name: 'hotspot-dot+X-Y-Z',
+        position: `${center.x + x2} ${center.y - y2} ${center.z - z2}`
+      });
 
-</script>
+      modelViewer.updateHotspot({
+        name: 'hotspot-dim+X-Z',
+        position: `${center.x + x2 * 1.2} ${center.y} ${center.z - z2 * 1.2}`
+      });
+      modelViewer.querySelector('button[slot="hotspot-dim+X-Z"]').textContent =
+        `${(size.y * 100).toFixed(0)} cm`;
 
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script> 
+      modelViewer.updateHotspot({
+        name: 'hotspot-dot+X+Y-Z',
+        position: `${center.x + x2} ${center.y + y2} ${center.z - z2}`
+      });
+
+      modelViewer.updateHotspot({
+        name: 'hotspot-dim+Y-Z',
+        position: `${center.x} ${center.y + y2 * 1.1} ${center.z - z2 * 1.1}`
+      });
+      modelViewer.querySelector('button[slot="hotspot-dim+Y-Z"]').textContent =
+        `${(size.x * 100).toFixed(0)} cm`;
+
+      modelViewer.updateHotspot({
+        name: 'hotspot-dot-X+Y-Z',
+        position: `${center.x - x2} ${center.y + y2} ${center.z - z2}`
+      });
+
+      modelViewer.updateHotspot({
+        name: 'hotspot-dim-X-Z',
+        position: `${center.x - x2 * 1.2} ${center.y} ${center.z - z2 * 1.2}`
+      });
+      modelViewer.querySelector('button[slot="hotspot-dim-X-Z"]').textContent =
+        `${(size.y * 100).toFixed(0)} cm`;
+
+      modelViewer.updateHotspot({
+        name: 'hotspot-dot-X-Y-Z',
+        position: `${center.x - x2} ${center.y - y2} ${center.z - z2}`
+      });
+
+      modelViewer.updateHotspot({
+        name: 'hotspot-dim-X-Y',
+        position: `${center.x - x2 * 1.2} ${center.y - y2 * 1.1} ${center.z}`
+      });
+      modelViewer.querySelector('button[slot="hotspot-dim-X-Y"]').textContent =
+        `${(size.z * 100).toFixed(0)} cm`;
+
+      modelViewer.updateHotspot({
+        name: 'hotspot-dot-X-Y+Z',
+        position: `${center.x - x2} ${center.y - y2} ${center.z + z2}`
+      });
+
+      modelViewer.updateHotspot({
+        name: 'hotspot-material-top',
+        position: `${center.x} ${center.y + y2 + 0.2} ${center.z}`
+      });
+
+      modelViewer.updateHotspot({
+        name: 'hotspot-material-legs',
+        position: `${center.x} ${center.y - y2 - 0.2} ${center.z}`
+      });
+
+      renderSVG();
+      modelViewer.addEventListener('camera-change', renderSVG);
+    });
+
+  </script>
+
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 </body>
+
 </html>
